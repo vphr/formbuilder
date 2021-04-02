@@ -1,0 +1,13 @@
+{
+  "name": "formbuilder",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:vphr/formbuilder.git",
+  "author": "<0956458@hr.nl>",
+  "license": "MIT",
+  "dependencies": {
+    "ts-node": "^9.1.1",
+    "tsc": "^1.20150623.0",
+    "typescript": "^4.2.3"
+  }
+}
