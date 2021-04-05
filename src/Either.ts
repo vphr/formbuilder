@@ -42,7 +42,5 @@ const either_join = <a, b>(x: Either<Either<a, b>, b>): Either<a, b> =>
 	x.kind == "Right" ? right(x.value)
 		: x.value
 
-
-
 const either_bind = <a, b, newA>(p: Either<a, b>, f: Fun<a, Either<newA, b>>): Either<newA, b> =>
-	either_join(p.map(f))
+	either_map<a, Either<newA, b>, b>().f(f).then(Fun(either_join)).f(p)

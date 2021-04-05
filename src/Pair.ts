@@ -34,4 +34,4 @@ const pair_map = <a, b, a1, b1>(l: Fun<a, a1>, r: Fun<b, b1>): Fun<Pair<a, b>, P
 	Fun(p => pair<a1, b1>().f(pair_mapleft<a, a1, b>(l).f(p).fst)
 		.f(pair_mapright<a, b, b1>(r).f(p).snd))
 
-
+export const pair_apply = <a, b>(f: Pair<Fun<a, b>, a>): b => f.fst.f(f.snd)
