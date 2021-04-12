@@ -40,10 +40,8 @@ const state_bind = <s, a, b>(f: Fun<a, State<s, b>>): Fun<State<s, a>, State<s, 
 	state_map<s, a, State<s, b>>(f).then(Fun(state_join))
 
 
-const get_state = <s>() => <k extends keyof s>(kk: k): State<s, s[k]> =>
+export const get_state = <s>() => <k extends keyof s>(kk: k): State<s, s[k]> =>
 	runState(Fun(s0 => mkpair(s0[kk], s0)))
 
-const set_state = <s>() => <k extends keyof s>(kk: k) => (val: s[k]): State<s, Unit> =>
+export const set_state = <s>() => <k extends keyof s>(kk: k) => (val: s[k]): State<s, Unit> =>
 	runState(Fun(s0 => mkpair({}, { ...s0, [kk]: val })))
-
-
