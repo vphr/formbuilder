@@ -4,3 +4,8 @@ export type PickArray<a> = Pick<a, {
 }[keyof a]>
 
 export type ArrayVal<T> = T extends Array<infer U> ? U : never;
+
+export const Append = <a>(a: a, as: a[]): a[] => as.concat(a)
+export const Last = <a>(as: a[]): a => as[as.length - 1]
+
+

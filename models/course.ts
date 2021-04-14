@@ -1,5 +1,5 @@
 export type Course = {
-	Name_2: string
+	Name: string
 	StudyPoints: number
 }
 
@@ -13,6 +13,6 @@ export const lectures: Lectures = {
 }
 
 export const courses: Course = {
-	Name_2: "course",
+	Name: "course",
 	StudyPoints: 55
 }
