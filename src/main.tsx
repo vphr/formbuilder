@@ -1,11 +1,8 @@
 import React from 'react'
 import { student, Student } from '../models/student';
-import { flatten_array } from './Array';
-import { Formbuilder, sample1 } from './Formbuilder';
+import { Formbuilder } from './Formbuilder';
 import { Fun } from './Fun';
 import { FormbuilderTEST } from './types/formComponentBuilder';
-import { Testformbuilder } from './types/formElementBuilder';
-import { mergeFunction, NumberElement } from './types/formTypes';
 
 type Appstate = {
 	randomelement: string
@@ -30,8 +27,9 @@ class App extends React.Component<{}, Appstate2> {
 	render(): JSX.Element {
 		return (
 			<div className="App">
-				<FormbuilderTEST attr={mergeFunction(Formbuilder().Entity(this.state, Fun(q => q.select("gender", "Name", "enrolled").Children("grades", Fun(q => q.select("CourseId", "Grade")
-					.Children("test", Fun(q => q.select("example"))))))).flat_data)}
+				<FormbuilderTEST data={Formbuilder().Entity(this.state, Fun(q => q.select("gender", "Name", "enrolled").Children("grades", Fun(q => q.select("CourseId", "Grade")
+					.Children("test", Fun(q => q.select("example")))
+				)))).data}
 					onchange={(k, v, i) => this.setState({ ...this.state, [k]: v })} />
 			</div>
 		)

@@ -1,37 +1,82 @@
 import React from 'react'
-import { formObject, formObjectConstructor, formTypeLiteral } from './formTypesExperimental'
+import { formObject, getFormType, processObjectKeys } from './formTypes'
 
-type props = {
-	attr: formObject[]
-	onchange: (key: string, value: any, index: number) => void
+type props<a> = {
+	data: a[]
+	onchange: <t>(key: string, value: t, index: number) => void
 }
 type state = {
 }
 
 
-export class FormbuilderTEST extends React.Component<props, state> {
-	constructor(props) {
+export class FormbuilderTEST<a> extends React.Component<props<a>, state> {
+	constructor(props: props<a>) {
 		super(props)
-		this.state = {}
+		this.state = {
+			children: []
+		}
 	}
 	render() {
 		return <div>
-			{JSON.stringify(this.props.attr)}
-			{this.props.attr.flatMap((e, j) => {
+			{JSON.stringify(this.props.data)}
+			{processObjectKeys(this.props.data).flatMap(formobj => {
+				//{this.props.data.flatMap((e, j) => Object.keys(e).flatMap(o => {
+				switch (formobj.type) {
+					case "boolean": {
+						return <div>
+							<label >{formobj.key} </label>
+							<input type="checkbox" checked={formobj.value} onChange={_ => this.props.onchange(formobj.key, !formobj.value, formobj.index)} />
+						</div>
+
+					}
+					case "number": {
+						return <div>
+							<label >{formobj.key} </label>
+							<input type="number" value={formobj.value} onChange={c => this.props.onchange(formobj.key, c.currentTarget.valueAsNumber, formobj.index)} />
+						</div>
+
+					}
+					case "object": {
+						return <FormbuilderTEST
+							data={this.props.data[formobj.index][formobj.key]}
+							onchange={(k, v, i) => {
+								let res = { ...this.props.data[formobj.index][formobj.key] }
+								res[i] = { [k]: v }
+								this.props.onchange(formobj.key, res, i)
+							}}
+						/>
+					}
+					case "string": {
+						return <div>
+							<label >{formobj.key} </label>
+							<input type="text" value={formobj.value} onChange={c => this.props.onchange(formobj.key, c.currentTarget.value, formobj.index)} />
+						</div>
+
+					}
+					default: {
+						return <div></div>
+					}
+				}
+			})}
+
+		</div>
+	}
+}
+/*
+
+			{this.props.attr.map((e, j) => {
 				switch (e.type) {
+					case "array": {
+						return <FormbuilderTEST attr={e.value} onchange={(k, v, i) => {
+							let t = typeof this.props.attr[j].value[i].type
+							return this.props.onchange(k, v, i)
+						}
+						} />
+					}
 					case "object": {
 						return <FormbuilderTEST attr={e.value as formObject[]} onchange={(k, v, i) => {
 							let nested_data = this.props.attr[j] as any
-							//let new_entry = { ...nested_data, {nested_data.value[i]: formObjectConstructor(typeof v as formTypeLiteral, v as any, k) }
-
-							nested_data.value[i] = formObjectConstructor(typeof v as formTypeLiteral, v as any, k)
-							console.log(nested_data)
-							//console.log({...this.props.attr[e.key], [this.props.attr[j].value[i]]: nested_data })
-							let fin2 = { ...this.props.attr[j].value[i], value: v }
-							let res = { ...this.props.attr[j].value[i].key }
-							console.log(e.key)
-							let example = { ...e, [e.key]: nested_data }
-							console.log(this.props.attr[e.key])
+							nested_data.value[i] = formObjectConstructor(v, k)
 							this.props.onchange(this.props.attr[e.key], nested_data, i)
 						}
 						} />
@@ -39,7 +84,7 @@ export class FormbuilderTEST extends React.Component<props, state> {
 					case "boolean": {
 						return <div>
 							<label >{e.key}</label>
-							<input type="checkbox" value={e.value as formTypeLiteral} onChange={c => this.props.onchange(e.key, c.currentTarget.value, j)} />
+							<input type="checkbox" checked={e.value} onChange={c => this.props.onchange(e.key, !e.value, j)} />
 						</div>
 					}
 					case "string": {
@@ -57,6 +102,26 @@ export class FormbuilderTEST extends React.Component<props, state> {
 				}
 			}
 			)}
-		</div>
-	}
-}
+*/
+/*
+						data={this.props.data[formobj.index][formobj.key]} onchange={(k, v, i) => {
+							let nestedList = this.props.data[formobj.index][formobj.key]
+							return this.props.onchange(formobj.key, nestedList, i)
+ * */
+
+
+
+/*
+					case "array": {
+						return <FormbuilderTEST
+							data={[this.props.data[formobj.index][formobj.key] as any]}
+							onchange={(key, newValue, index) => {
+								let nested_data = this.props.data[formobj.index][formobj.key] as any
+								let new_entry = { ...nested_data, [key]: newValue }
+								nested_data = new_entry
+								console.log(nested_data, "1")
+								return this.props.onchange(formobj.key, nested_data, index)
+							}
+							} />
+					}
+ * */
