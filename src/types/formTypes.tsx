@@ -1,6 +1,6 @@
 import React from 'react'
 type formType = number | string | boolean | object
-export type formTypeLiteral = "number" | "string" | "boolean" | "object" | "array" | "none"
+export type formTypeLiteral = "number" | "string" | "boolean" | "object" | "array" | "none" 
 export interface formObject2 {
 	type: formTypeLiteral
 	value: formType
@@ -40,14 +40,20 @@ export type formObject = {
 	children: formObject[]
 } |
 {
+	type: 'nestedobject'
+	index: number
+	key: string
+	value: formObject[]
+} |
+{
 	type: 'none'
 	index: number
 	key: string
 }
+const mergeobj = function(t: any[]) { return Object.assign({}, ...Object.keys(t).flatMap(k => t[k])) }
 export const processObjectKeys = function <t>(v: t[]): formObject[] {
 	return v.flatMap((e, index) =>
 		Object.entries(e).map(o => {
-			//console.log(e, o, getFormType(o[1]))
 			switch (getFormType(o[1])) {
 				case "boolean": {
 					return ({
@@ -104,12 +110,8 @@ export const getFormType = function <t>(v: t): formTypeLiteral {
 		return "array"
 	}
 	else if (Array.isArray(v) && typeof v[0] === "object" && !(Array.isArray(v[0]))) {
-		//else if (v instanceof Array && typeof v[0] === "object" && !(v[0] instanceof Array)) {
 		return 'object'
 	}
-	/*
-	 v.flatMap(e => Object.keys(e).filter(o => Array.isArray(e[o]))).length > 0 
-	 */
 	else if (typeof v == "string") {
 		return "string"
 	}

@@ -9,11 +9,10 @@ type state = {
 }
 
 
-export class FormbuilderTEST<a> extends React.Component<props<a>, state> {
+export class FormbuilderComponent<a> extends React.Component<props<a>, state> {
 	constructor(props: props<a>) {
 		super(props)
 		this.state = {
-			children: []
 		}
 	}
 	render() {
@@ -32,19 +31,33 @@ export class FormbuilderTEST<a> extends React.Component<props<a>, state> {
 					case "number": {
 						return <div>
 							<label >{formobj.key} </label>
-							<input type="number" value={formobj.value} onChange={c => this.props.onchange(formobj.key, c.currentTarget.valueAsNumber, formobj.index)} />
+							<input type="number" value={formobj.value} onChange={c => {
+								return this.props.onchange(formobj.key, c.currentTarget.valueAsNumber, formobj.index)
+							}} />
 						</div>
 
 					}
 					case "object": {
-						return <FormbuilderTEST
+						return <FormbuilderComponent
 							data={this.props.data[formobj.index][formobj.key]}
 							onchange={(k, v, i) => {
-								let res = { ...this.props.data[formobj.index][formobj.key] }
-								res[i] = { [k]: v }
-								this.props.onchange(formobj.key, res, i)
+
+
+								//								let res3 = { ...this.props.data[formobj.index][formobj.key] }
+								//								let res11 = { ...res3, [i]: { ...res3[i], [k]: v } }
+								//								let res9 = { ...res3, ...res10 }
+								//								let result = Object.assign({}, ...Object.keys(res11).flatMap(k => res11[k]))
+								//								console.log(res11)
+
+								let initial = { ...this.props.data[formobj.index] }
+								let withnewval = { ...initial[formobj.key], [i]: { ...initial[formobj.key][i], [k]: v } }
+								let result = Object.assign({}, ...Object.keys(withnewval).map(k => withnewval[k]))
+								this.props.onchange(formobj.key, Array(result), formobj.index)
 							}}
 						/>
+					}
+					case "nestedobject": {
+						return <div>nested</div>
 					}
 					case "string": {
 						return <div>
@@ -62,66 +75,4 @@ export class FormbuilderTEST<a> extends React.Component<props<a>, state> {
 		</div>
 	}
 }
-/*
 
-			{this.props.attr.map((e, j) => {
-				switch (e.type) {
-					case "array": {
-						return <FormbuilderTEST attr={e.value} onchange={(k, v, i) => {
-							let t = typeof this.props.attr[j].value[i].type
-							return this.props.onchange(k, v, i)
-						}
-						} />
-					}
-					case "object": {
-						return <FormbuilderTEST attr={e.value as formObject[]} onchange={(k, v, i) => {
-							let nested_data = this.props.attr[j] as any
-							nested_data.value[i] = formObjectConstructor(v, k)
-							this.props.onchange(this.props.attr[e.key], nested_data, i)
-						}
-						} />
-					}
-					case "boolean": {
-						return <div>
-							<label >{e.key}</label>
-							<input type="checkbox" checked={e.value} onChange={c => this.props.onchange(e.key, !e.value, j)} />
-						</div>
-					}
-					case "string": {
-						return <div>
-							<label >{e.key}</label>
-							<input type="text" value={e.value as formTypeLiteral} onChange={c => this.props.onchange(e.key, c.currentTarget.value, j)} />
-						</div>
-					}
-					case "number": {
-						return <div>
-							<label >{e.key}</label>
-							<input type="number" value={e.value as formTypeLiteral} onChange={c => this.props.onchange(e.key, c.currentTarget.value, j)} />
-						</div>
-					}
-				}
-			}
-			)}
-*/
-/*
-						data={this.props.data[formobj.index][formobj.key]} onchange={(k, v, i) => {
-							let nestedList = this.props.data[formobj.index][formobj.key]
-							return this.props.onchange(formobj.key, nestedList, i)
- * */
-
-
-
-/*
-					case "array": {
-						return <FormbuilderTEST
-							data={[this.props.data[formobj.index][formobj.key] as any]}
-							onchange={(key, newValue, index) => {
-								let nested_data = this.props.data[formobj.index][formobj.key] as any
-								let new_entry = { ...nested_data, [key]: newValue }
-								nested_data = new_entry
-								console.log(nested_data, "1")
-								return this.props.onchange(formobj.key, nested_data, index)
-							}
-							} />
-					}
- * */
