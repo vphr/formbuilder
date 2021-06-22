@@ -11,11 +11,13 @@ type nest4 = {
 }
 type nest3 = {
 	layer3element1: string
+	layer3element3: number
 	layer3element2: nest4[]
 
 }
 type nest2 = {
 	layer2element1: string
+	layer2element3: boolean
 	layer2element2: nest3[]
 
 }
@@ -41,9 +43,9 @@ class App extends React.Component<{}, Appstate> {
 			nest: [{
 				layer1element1: "layer1", layer1element2:
 					[{
-						layer2element1: "layer2", layer2element2:
+						layer2element1: "layer2", "layer2element3": false, layer2element2:
 							[{
-								layer3element1: "layer3", layer3element2:
+								layer3element1: "layer3", "layer3element3": 344, layer3element2:
 									[{ layer4element1: "layer4", layer4element2: 4 }]
 							}]
 					}]
@@ -56,17 +58,23 @@ class App extends React.Component<{}, Appstate> {
 	render(): JSX.Element {
 		return (
 			<div className="App">
-				<FormbuilderComponent data={Formbuilder().Entity(this.state, Fun(q => q.select("yetanother", "randomelement", "anotherelement")
-					.Children("nest", Fun(q => q.Children("layer1element2", Fun(q => q.select("layer2element1")
-						.Children("layer2element2", Fun(q => q.select("layer3element1")
-							.Children("layer3element2", Fun(q => q.select("layer4element1", "layer4element2")))
+				<FormbuilderComponent
+					rawdata={this.state}
+					data={Formbuilder().Entity(this.state, Fun(q => q.select("yetanother", "randomelement", "anotherelement")
+						.Children("nest", Fun(q => q.Children("layer1element2", Fun(q => q.select("layer2element1", "layer2element3")
+							.Children("layer2element2", Fun(q => q.select("layer3element1", "layer3element3")
+								.Children("layer3element2", Fun(q => q.select("layer4element1", "layer4element2")))
+							))
 						))
-					))
-					))
-				)).data}
-					onchange={(k, v, i) => this.setState({ ...this.state, [k]: v })} />
+						))
+					)).processedkeys}
+					onchange={(k, v, i) => {
+						let s = { ...this.state, [k]: v }
+						return this.setState(s)
+					}} />
 			</div>
 		)
 	}
 }
 export default App;
+

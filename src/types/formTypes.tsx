@@ -1,6 +1,6 @@
 import React from 'react'
 type formType = number | string | boolean | object
-export type formTypeLiteral = "number" | "string" | "boolean" | "object" | "array" | "none" 
+export type formTypeLiteral = "number" | "string" | "boolean" | "object" | "array" | "none" | "base"
 export interface formObject2 {
 	type: formTypeLiteral
 	value: formType
@@ -30,17 +30,23 @@ export type formObject = {
 	type: 'object'
 	index: number
 	key: string
-	children: formObject[]
+	value: formObject[]
 } |
 
 {
 	type: 'array'
 	index: number
 	key: string
-	children: formObject[]
+	value: formObject[]
 } |
 {
 	type: 'nestedobject'
+	index: number
+	key: string
+	value: formObject[]
+} |
+{
+	type: 'base'
 	index: number
 	key: string
 	value: formObject[]
@@ -50,10 +56,9 @@ export type formObject = {
 	index: number
 	key: string
 }
-const mergeobj = function(t: any[]) { return Object.assign({}, ...Object.keys(t).flatMap(k => t[k])) }
 export const processObjectKeys = function <t>(v: t[]): formObject[] {
-	return v.flatMap((e, index) =>
-		Object.entries(e).map(o => {
+	return v.flatMap((e) =>
+		Object.entries(e).map((o, index) => {
 			switch (getFormType(o[1])) {
 				case "boolean": {
 					return ({
@@ -85,7 +90,7 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 						type: "object",
 						index: index,
 						key: o[0],
-						children: processObjectKeys(o[1])
+						value: processObjectKeys(o[1])
 					})
 				}
 				case "array": {
@@ -93,23 +98,30 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 						type: "array",
 						index: index,
 						key: o[0],
-						children: processObjectKeys(o[1])
+						value: processObjectKeys(o[1])
 					})
 				}
+				case "base":
+					return ({
+						type: "base",
+						index: index,
+						key: o[0],
+						value: processObjectKeys(o[1])
+					})
 				case "none":
 					return ({
 						type: "none",
 						key: o[0],
-						index: index
+						index: index,
 					})
 			}
 		}))
 }
 export const getFormType = function <t>(v: t): formTypeLiteral {
-	if (Array.isArray(v) && typeof v[0] === "object" && Array.isArray(v[0])) {
+	if (Array.isArray(v) && Object.keys(v).length === 1) {
 		return "array"
 	}
-	else if (Array.isArray(v) && typeof v[0] === "object" && !(Array.isArray(v[0]))) {
+	else if (Array.isArray(v) && typeof v[0] === "object" && (!Array.isArray(v[0])) && Object.keys(v).length >= 1) {
 		return 'object'
 	}
 	else if (typeof v == "string") {
@@ -124,83 +136,3 @@ export const getFormType = function <t>(v: t): formTypeLiteral {
 	return "none"
 }
 
-/*export const formObjectConstructor = function(v: formObject, k: string): formObject {
-	if (Array.isArray(v)) {
-		return ({
-			key: k,
-			value: v.flatMap(oo => Object.keys(oo).flatMap(e => formObjectConstructor(oo[e], e))),
-			type: "array"
-		})
-	}
-	else if (typeof v == "string") {
-		return ({
-			key: k,
-			value: v,
-			type: "string"
-		})
-	}
-	else if (typeof v == "boolean") {
-		return ({
-			key: k,
-			value: v,
-			type: "boolean"
-		})
-	}
-	else if (typeof v == "number") {
-		return ({
-			key: k,
-			value: v,
-			type: "number"
-		})
-	}
-	return ({
-		key: k,
-		value: v,
-		type: null
-	})
-}
-export const mergeFunction = function(o: ElementType<formObject>): formObject[] {
-	let t = o
-	if (Array.isArray(t)) {
-		return t.flatMap(e => mergeFunction(e))
-	}
-	else if (typeof t == "object") {
-		let n = Object.keys(o).flatMap(e => objToElement(o[e], e))
-		return n
-	}
-	return
-
-}
-
-export const objToElement = function(o: ElementType<formObject>, k: string): formObject {
-	return formObjectConstructor(o, k)
-}*/
-
-/*
-export const processObjectKeys = function <t>(v: t[]) {
-
-let test2 = v.flatMap((e, j) => Object.entries(e).map(o => {
-//console.log(o[1], getFormType(o[1]))
-let t = ({
-key: o[0],
-value: o[1],
-index: j
-})
-return t
-}))
-let test = v.flatMap((e, j) => Object.keys(e).flatMap(o => {
-let res = e[o]
-if (Array.isArray(res) && res.length === 1) {
-res = res[0]
-}
-let t = ({
-key: o,
-value: e[o],
-index: j
-})
-return t
-}))
-return test2
-
-}
- */

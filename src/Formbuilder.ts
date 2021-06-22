@@ -5,6 +5,7 @@ import { Fun } from "./Fun";
 import { Id } from "./Id";
 import { mkpair, Pair } from "./Pair";
 import { omitMany, pickMany } from "./Pickers";
+import { formObject, processObjectKeys } from "./types/formTypes";
 import { objToElement } from "./types/formTypesExperimental";
 import { Unit } from "./Void";
 
@@ -17,7 +18,9 @@ type FormStep<a, b> = {
 	entity: FormStack<a, b>
 	select: <p extends keyof a>(...p: p[]) => FormStep<Omit<a, p>, Pick<a, p> | b>
 	nextEntity: <c, d, e>(data: c, f: Fun<FormStep<c, b>, FormStep<d, e>>) => FormStep<d, e>
-	Children: <arr extends keyof PickArray<a>, p extends keyof ArrayVal<a[arr]>>(arr: arr, f: Fun<FormStep<ArrayVal<a[arr]>, any>, FormStep<Omit<ArrayVal<a[arr]>, p>, Pick<ArrayVal<a[arr]>, p>>>) =>
+	Children: <arr extends keyof PickArray<a>, p extends keyof ArrayVal<a[arr]>>(arr: arr, f: Fun<FormStep<ArrayVal<a[arr]>, any>,
+		FormStep<Omit<ArrayVal<a[arr]>, p>, Pick<ArrayVal<a[arr]>, p>>>) =>
+		//Children: <arr extends keyof PickArray<a>, p extends keyof ArrayVal<a[arr]>>(arr: arr, f: Fun<FormStep<ArrayVal<a[arr]>, any>, FormStep<Omit<ArrayVal<a[arr]>, p>, Pick<ArrayVal<a[arr]>, p>>>) =>
 		//FormStep<Omit<ArrayVal<a[arr]>, p>, b | Pick<ArrayVal<a[arr]>, p>[]>
 		FormStep<Omit<ArrayVal<a[arr]>, p>, b | { [x: string]: Pick<ArrayVal<a[arr]>, p>[] }>
 }
@@ -27,7 +30,8 @@ export const Formbuilder = (): Formbuilder => ({
 		let t = f.f(formstep(mkpair([data], [])))
 		return {
 			data: t.entity.snd,
-			flat_data: flatten_array(t.entity.snd)
+			flat_data: flatten_array(t.entity.snd),
+			processedkeys: processObjectKeys<c>(t.entity.snd)
 		}
 	}
 })
@@ -40,7 +44,8 @@ const formstep = <a, b>(data: FormStack<a, b>): FormStep<a, b> => ({
 		return f.f(formstep(mkpair([data], this.entity.snd)))
 	},
 	//[x: string]: Pick<ArrayVal<a[arr]>
-	Children: function <arr extends keyof PickArray<a>, p extends keyof ArrayVal<a[arr]>>(arr: arr, f: Fun<FormStep<ArrayVal<a[arr]>, any>, FormStep<Omit<ArrayVal<a[arr]>, p>, Pick<ArrayVal<a[arr]>, p>>>):
+	Children: function <arr extends keyof PickArray<a>, p extends keyof ArrayVal<a[arr]>>(arr: arr, f: Fun<FormStep<ArrayVal<a[arr]>, any>,
+		FormStep<Omit<ArrayVal<a[arr]>, p>, Pick<ArrayVal<a[arr]>, p>>>):
 		//FormStep<Omit<ArrayVal<a[arr]>, p>, b | Pick<ArrayVal<a[arr]>, p>[]> {
 		FormStep<Omit<ArrayVal<a[arr]>, p>, b | { [x: string]: Pick<ArrayVal<a[arr]>, p>[] }> {
 		let res = f.f(formstep(mkpair([Last(data.fst)[arr][0]], [])))
@@ -51,6 +56,7 @@ const formstep = <a, b>(data: FormStack<a, b>): FormStep<a, b> => ({
 type final<a> = {
 	data: a[],
 	flat_data: a[]
+	processedkeys: formObject[]
 }
 export let t = Formbuilder().Entity(student, Fun(q => q.select("gender", "Name", "enrolled").Children("grades", Fun(q => q.select("CourseId", "Grade")
 	.Children("test", Fun(q => q.select("example")))))
