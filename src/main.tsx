@@ -1,4 +1,5 @@
 import React from 'react'
+import { readJsonConfigFile } from 'typescript';
 import { student, Student } from '../models/student';
 import { Formbuilder } from './Formbuilder';
 import { Fun } from './Fun';
@@ -58,6 +59,9 @@ class App extends React.Component<{}, Appstate> {
 	render(): JSX.Element {
 		return (
 			<div className="App">
+				<div>
+					{JSON.stringify(this.state)}
+				</div>
 				<FormbuilderComponent
 					rawdata={this.state}
 					data={Formbuilder().Entity(this.state, Fun(q => q.select("yetanother", "randomelement", "anotherelement")
@@ -68,7 +72,7 @@ class App extends React.Component<{}, Appstate> {
 						))
 						))
 					)).processedkeys}
-					onchange={(k, v, i) => {
+					onchange={(k, v) => {
 						let s = { ...this.state, [k]: v }
 						return this.setState(s)
 					}} />

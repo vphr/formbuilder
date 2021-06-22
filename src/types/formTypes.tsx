@@ -1,59 +1,41 @@
 import React from 'react'
 type formType = number | string | boolean | object
-export type formTypeLiteral = "number" | "string" | "boolean" | "object" | "array" | "none" | "base"
-export interface formObject2 {
-	type: formTypeLiteral
-	value: formType
-	key: string
-}
-
+export type formTypeLiteral = "number" | "string" | "boolean" | "object" | "array" | "none"
 export type formObject = {
 	type: "string"
-	index: number
 	key: string
 	value: string
 } |
 {
 	type: "number"
-	index: number
 	key: string
 	value: number
 } |
 {
 	type: "boolean"
-	index: number
 	key: string
 	value: boolean
 }
 	|
 {
 	type: 'object'
-	index: number
 	key: string
 	value: formObject[]
 } |
 
 {
 	type: 'array'
-	index: number
 	key: string
 	value: formObject[]
-} |
-{
-	type: 'nestedobject'
-	index: number
-	key: string
-	value: formObject[]
-} |
+}
+	|
 {
 	type: 'base'
-	index: number
 	key: string
 	value: formObject[]
 } |
 {
 	type: 'none'
-	index: number
 	key: string
 }
 export const processObjectKeys = function <t>(v: t[]): formObject[] {
@@ -101,13 +83,6 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 						value: processObjectKeys(o[1])
 					})
 				}
-				case "base":
-					return ({
-						type: "base",
-						index: index,
-						key: o[0],
-						value: processObjectKeys(o[1])
-					})
 				case "none":
 					return ({
 						type: "none",
