@@ -55,6 +55,10 @@ class App extends React.Component<{}, Appstate> {
 	}
 	render(): JSX.Element {
 		return (
+			<div>
+				<div>
+					{JSON.stringify(this.state)}
+				</div>
 			<div className="App">
 				<FormbuilderComponent
 					data={Formbuilder().Entity(this.state, Fun(q => q.select("yetanother", "randomelement", "anotherelement")
@@ -67,6 +71,7 @@ class App extends React.Component<{}, Appstate> {
 					)).data_query_pair}
 					onchange={this.change}
 					/>
+			</div>
 			</div>
 		)
 	}
