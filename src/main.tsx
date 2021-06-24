@@ -32,8 +32,6 @@ type Appstate = {
 	yetanother: boolean
 	nest: nest1[]
 }
-type Appstate2 = Student
-
 class App extends React.Component<{}, Appstate> {
 	constructor(props: {}) {
 		super(props)
@@ -63,7 +61,6 @@ class App extends React.Component<{}, Appstate> {
 					{JSON.stringify(this.state)}
 				</div>
 				<FormbuilderComponent
-					rawdata={this.state}
 					data={Formbuilder().Entity(this.state, Fun(q => q.select("yetanother", "randomelement", "anotherelement")
 						.Children("nest", Fun(q => q.Children("layer1element2", Fun(q => q.select("layer2element1", "layer2element3")
 							.Children("layer2element2", Fun(q => q.select("layer3element1", "layer3element3")
@@ -71,11 +68,9 @@ class App extends React.Component<{}, Appstate> {
 							))
 						))
 						))
-					)).processedkeys}
-					onchange={(k, v) => {
-						let s = { ...this.state, [k]: v }
-						return this.setState(s)
-					}} />
+					)).data_query_pair}
+					onchange={this.change}
+					/>
 			</div>
 		)
 	}

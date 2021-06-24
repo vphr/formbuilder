@@ -40,12 +40,11 @@ export type formObject = {
 }
 export const processObjectKeys = function <t>(v: t[]): formObject[] {
 	return v.flatMap((e) =>
-		Object.entries(e).map((o, index) => {
+		Object.entries(e).map(o => {
 			switch (getFormType(o[1])) {
 				case "boolean": {
 					return ({
 						type: "boolean",
-						index: index,
 						key: o[0],
 						value: o[1]
 					})
@@ -53,7 +52,6 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 				case "number": {
 					return ({
 						type: "number",
-						index: index,
 						key: o[0],
 						value: o[1]
 
@@ -62,7 +60,6 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 				case "string": {
 					return ({
 						type: "string",
-						index: index,
 						key: o[0],
 						value: o[1]
 					})
@@ -70,7 +67,6 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 				case "object": {
 					return ({
 						type: "object",
-						index: index,
 						key: o[0],
 						value: processObjectKeys(o[1])
 					})
@@ -78,7 +74,6 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 				case "array": {
 					return ({
 						type: "array",
-						index: index,
 						key: o[0],
 						value: processObjectKeys(o[1])
 					})
@@ -87,7 +82,6 @@ export const processObjectKeys = function <t>(v: t[]): formObject[] {
 					return ({
 						type: "none",
 						key: o[0],
-						index: index,
 					})
 			}
 		}))

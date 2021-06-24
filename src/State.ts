@@ -11,7 +11,6 @@ type State<s, a> = {
 const runState = <s, a>(f: Fun<s, Pair<a, s>>): State<s, a> => ({
 	f: f,
 	then: function <b>(k: (_: a) => State<s, b>): State<s, b> {
-		//return state_bind(k).f(this)
 		return state_bind(Fun(k)).f(this)
 	}
 })
